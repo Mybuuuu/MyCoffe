@@ -1,0 +1,81 @@
+{
+  "profile": {
+    "name": "Mybuu",
+    "dailyLimit": 400,
+    "weight": 70,
+    "sensitivity": "Medium",
+    "onboarded": true,
+    "sleepGoal": 8,
+    "streak": 1,
+    "theme": "light",
+    "bedtime": "23:00",
+    "lifestyle": "Office",
+    "lastLogDate": "Tue May 26 2026"
+  },
+  "logs": [
+    {
+      "id": "7n75brh1z",
+      "timestamp": "2026-05-26T16:48:23.973Z",
+      "drinkId": "flat-white",
+      "name": "Flat White",
+      "caffeine": 130,
+      "size": "Medium"
+    }
+  ],
+  "goals": [
+    {
+      "id": "sleep",
+      "title": "Sleep First",
+      "description": "Avoid caffeine 8 hours before bedtime",
+      "target": 5,
+      "current": 0,
+      "icon": "Moon",
+      "isCompleted": false
+    },
+    {
+      "id": "limit",
+      "title": "Smart Balancer",
+      "description": "Stay under your daily limit",
+      "target": 7,
+      "current": 0,
+      "icon": "Zap",
+      "isCompleted": false
+    },
+    {
+      "id": "water",
+      "title": "Hydration Hero",
+      "description": "Drink water after each coffee",
+      "target": 10,
+      "current": 0,
+      "icon": "Droplets",
+      "isCompleted": false
+    }
+  ],
+  "customDrinks": [],
+  "notifications": [
+    {
+      "id": "late-caffeine-7n75brh1z",
+      "timestamp": "2026-05-26T16:48:38.536Z",
+      "read": true,
+      "title": "Late caffeine alert",
+      "message": "Drinking caffeine this late might affect your deep sleep tonight.",
+      "type": "warning"
+    },
+    {
+      "id": "u0nxa3ds2",
+      "timestamp": "2026-05-26T16:48:24.784Z",
+      "read": true,
+      "title": "Drink Tracked ☕",
+      "message": "Added Flat White (130mg) of caffeine.",
+      "type": "info"
+    },
+    {
+      "id": "lyfxgdma6",
+      "timestamp": "2026-05-26T16:47:21.602Z",
+      "read": true,
+      "title": "Profile Initialized 🚀",
+      "message": "Welcome, Mybuu! Your customizable caffeine threshold is set to 400mg.",
+      "type": "success"
+    }
+  ]
+}
