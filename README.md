@@ -1,6 +1,6 @@
-# ☕ MyCoffe Kelompok 1 - Production Ready Backend Platform
+# ☕ MyCoffe - Production Ready Backend Platform
 
-REST API modular dan scalable untuk platform coffee shop modern **MyCoffe Kelompok 1**. Dirancang menggunakan **Node.js, Express.js, Sequelize ORM, dan JWT Authentication**.
+REST API modular dan scalable untuk platform coffee shop modern **MyCoffe**. Dirancang menggunakan **Node.js, Express.js, Sequelize ORM, dan JWT Authentication**.
 
 Platform ini siap untuk di-deploy ke server production (VPS/Cloud Run) dengan database MySQL serta otomatis mendukung fallback cerdas SQLite untuk simulasi sandbox lokal.
 
@@ -172,61 +172,10 @@ Saat menghubungkan backend ini ke kode UI Anda di Vercel:
 * `PUT    /api/products/:id` - [ADMIN] Melakukan update data stok, harga, nama produk.
 * `DELETE /api/products/:id` - [ADMIN] Menghapus produk.
 
-### 🛒 Keranjang Belanja (`/api/cart`)
-* `GET    /api/cart` - Melihat detail keranjang belanja user aktif & total tagihan.
-* `POST   /api/cart` - Memasukkan menu pilihan ke keranjang belanja.
-* `PUT    /api/cart/:id` - Memperbarui kuantitas (qty) item keranjang belanja.
-* `DELETE /api/cart/:id` - Membuang item dari daftar keranjang.
-* `DELETE /api/cart/clear` - Mengosongkan isi keranjang belanja user.
-
-### 🧾 Transaksi Pembayaran & Histori Order (`/api/orders`)
-* `POST   /api/orders/checkout` - Checkout dari dari isi Cart, mengurangi stok fisik kopi secara real-time, generate invoice.
-* `GET    /api/orders` - Histori pesanan (Customer melihat miliknya sendiri, Admin dapat memantau seluruh order masuk).
-* `GET    /api/orders/:id` - Detail invoice, list produk terbeli, nominal ongkir & grand total.
-* `PUT    /api/orders/:id/status` - [ADMIN] Memperbarui status pesanan (`pending` -> `paid` -> `diproses` -> `dikirim` -> `selesai`).
-
-### 📈 Ulasan Kopi & Rating (`/api/reviews`)
-* `POST   /api/reviews` - Menulis ulasan ulasan rasa kopi & memberi bintang. Re-kalkulasi agregat bintang global produk berjalan otomatis.
-* `GET    /api/reviews/product/:id` - Menampilkan list review produk bersangkutan.
-* `DELETE /api/reviews/:id` - [ADMIN/OWNER] Menghapus ulasan.
-
 ### 💖 Wishlist Favorit (`/api/wishlist`)
 * `GET    /api/wishlist` - Menampilkan menu favorit yang disimpan pelanggan.
 * `POST   /api/wishlist` - Mendaftarkan produk kopi ke daftar wishlist favorit.
 * `DELETE /api/wishlist/:id` - Mengeluarkan produk dari daftar wishlist favorit.
 
----
-
-## 📥 CONTOH FORMAT RESPONSE JSON
-
-### Format Response SUKSES (200 OK / 201 Created)
-```json
-{
-  "success": true,
-  "message": "Detail produk berhasil diambil",
-  "data": {
-    "id": 2,
-    "nama_produk": "Creamy Vanilla Latte",
-    "slug": "creamy-vanilla-latte",
-    "harga": "32000.00",
-    "diskon": "10.00",
-    "stok": 120,
-    "rating": "4.90",
-    "gambar": "https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&q=80&w=500",
-    "kategori_id": 3
-  }
-}
-```
-
-### Format Response GAGAL (400 Bad Request / 500 Internals)
-```json
-{
-  "success": false,
-  "message": "Stok kopi tidak mencukupi. Sisa stok saat ini: 4"
-}
-```
-
----
-
-## 🏆 KELOMPOK PENGEMBANG (Kelompok 1)
-Tim Pengembang Aplikasi Coffee Shop modern **MyCoffe Kelompok 1**. Siap mengantarkan pengalaman ngopi digital terbaik dunia!
+## 🤔 PENGEMBANG (Denny/Mybuu)
+Pengembang Aplikasi Coffee Shop modern **MyCoffe**. Siap mengantarkan pengalaman ngopi digital terbaik dunia!
