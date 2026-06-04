@@ -1,4 +1,4 @@
-import { Notification, UserProfile, ConsumptionLog } from '../types';
+import { AppNotification, UserProfile, ConsumptionLog } from '../types';
 import { getDailyTotal, isLateCaffeine } from './caffeine';
 
 export const playNotificationSound = () => {
@@ -46,20 +46,36 @@ export const createNotification = (
   title: string,
   message: string,
   type: 'info' | 'warning' | 'success' | 'alert'
-): Notification => ({
-  id: Math.random().toString(36).substr(2, 9),
-  title,
-  message,
-  type,
-  timestamp: new Date(),
-  read: false,
-});
+): AppNotification => {
+  // Trigger HTML5 system browser notification if permitted
+  try {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new window.Notification(`🐈 MyCoffee: ${title}`, {
+        body: message,
+        icon: '/assets/mycoffe1.jpg',
+        badge: '/assets/mycoffe1.jpg',
+        tag: 'mycoffee-alert'
+      });
+    }
+  } catch (error) {
+    console.error('Failed to dispatch system browser notification:', error);
+  }
+
+  return {
+    id: Math.random().toString(36).substr(2, 9),
+    title,
+    message,
+    type,
+    timestamp: new Date(),
+    read: false,
+  };
+};
 
 export const checkAndUpdateNotifications = (
   logs: ConsumptionLog[],
   profile: UserProfile,
-  existingNotifications: Notification[]
-): Notification | null => {
+  existingNotifications: AppNotification[]
+): AppNotification | null => {
   const dailyTotal = getDailyTotal(logs);
   const todayStr = new Date().toISOString().split('T')[0];
 

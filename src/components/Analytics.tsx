@@ -12,7 +12,11 @@ import {
   Info,
   CheckCircle,
   AlertCircle,
-  Coffee
+  Coffee,
+  Download,
+  Printer,
+  FileSpreadsheet,
+  FileText
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { ConsumptionLog, UserProfile, DRINK_DATABASE } from '../types';
@@ -107,6 +111,66 @@ export default function Analytics({ logs, profile, onBack }: AnalyticsProps) {
     return list;
   }, [stats, logs.length]);
 
+  const exportToCSV = () => {
+    const headers = "ID,Beverage Name,Caffeine Content (mg),Timestamp,Size\n";
+    const rows = logs.map(l => 
+      `"${l.id}","${(l.name || '').replace(/"/g, '""')}",${l.caffeine},"${new Date(l.timestamp).toISOString()}","${l.size || 'Medium'}"`
+    ).join("\n");
+    
+    const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `mycoffee_history_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportWellnessReport = () => {
+    const today = new Date().toDateString();
+    const text = `=========================================
+  MYCOFFEE - PERSONAL WELLNESS REPORT
+=========================================
+Generated on: ${today}
+Biometrics: Weight ${profile.weight}kg | Daily Limit ${profile.dailyLimit}mg
+
+SUMMARY STATS:
+- Weekly Average Intake: ${stats.weeklyAvg} mg/day
+- Peak Single Day Intake: ${stats.peakIntake} mg
+- Daily Limit Adherence: stayed under limit on ${stats.daysUnderLimit} of the last 7 days (${Math.round((stats.daysUnderLimit / 7) * 100)}%)
+- Primary Coffee Beverage: ${stats.topCategory}
+
+BARISTA CAT RETREAT & LIFESTYLE ADVICE:
+${insights.map(i => `🐾 ${i.text}`).join('\n')}
+
+SLEEP CYCLES & WATER CONTEXT:
+${profile.cutoffAlerts !== false ? '✅ Midnight caffeine cutoff reminders ACTIVE' : '❌ Sleep cutoff notifications INACTIVE'}
+${profile.hydrationAlerts !== false ? '✅ 2-Hour custom water hydration alerts ACTIVE' : '❌ Water tracking checks INACTIVE'}
+
+HEALTH ADVISORY FROM BARISTA CAT:
+Caffeine has a half-life of 5-6 hours. This custom report is compiled to help you balance delicious coffee ceremonies with deep stages of slow-wave sleep. Drink plenty of water to help your body process clean ingredients!
+
+=========================================
+MyCoffee Applet - Premium Smart Tracker 🐾☕
+`;
+
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `mycoffee_wellness_report_${new Date().toISOString().split('T')[0]}.txt`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportPDFByPrinting = () => {
+    window.print();
+  };
+
   if (logs.length === 0) {
     return (
       <div className="max-w-4xl mx-auto p-6 md:p-12 min-h-[80vh] flex flex-col">
@@ -138,15 +202,47 @@ export default function Analytics({ logs, profile, onBack }: AnalyticsProps) {
 
   return (
     <div className="max-w-6xl mx-auto p-6 md:p-12">
-      <header className="mb-12">
-        <button 
-          onClick={onBack} 
-          className="flex items-center gap-2 group px-5 py-2.5 bg-espresso text-soft-white hover:bg-caramel dark:bg-soft-white dark:text-espresso dark:hover:bg-caramel dark:hover:text-soft-white transition-all rounded-full font-sans font-black text-xs uppercase tracking-widest mb-6 shadow-md hover:scale-105 active:scale-95 duration-200 cursor-pointer w-fit"
-        >
-          <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          Back to Dashboard
-        </button>
-        <h1 className="text-5xl font-display font-black text-espresso dark:text-soft-white tracking-tight">Caffeine Analytics</h1>
+      <header className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6 print:hidden">
+        <div>
+          <button 
+            onClick={onBack} 
+            className="flex items-center gap-2 group px-5 py-2.5 bg-espresso text-soft-white hover:bg-caramel dark:bg-soft-white dark:text-espresso dark:hover:bg-caramel dark:hover:text-soft-white transition-all rounded-full font-sans font-black text-xs uppercase tracking-widest mb-6 shadow-md hover:scale-105 active:scale-95 duration-200 cursor-pointer w-fit"
+          >
+            <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            Back to Dashboard
+          </button>
+          <h1 className="text-5xl font-display font-black text-espresso dark:text-soft-white tracking-tight">Caffeine Analytics</h1>
+        </div>
+        
+        {/* Real-time Data Export Control Center */}
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={exportToCSV}
+            title="Download full tracking logs as standard Microsoft Excel CSV sheet"
+            className="flex items-center gap-2 px-5 py-3.5 bg-white dark:bg-white/10 hover:bg-caramel hover:text-white dark:hover:bg-caramel dark:hover:text-white transition-all rounded-2xl font-bold text-xs uppercase tracking-wider text-espresso dark:text-soft-white border border-warm-beige/30 dark:border-white/10 shadow-sm active:scale-95 duration-100 cursor-pointer"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-caramel group-hover:text-white" />
+            <span>Export CSV</span>
+          </button>
+
+          <button
+            onClick={exportWellnessReport}
+            title="Download cute biometric wellness recommendations advisory card as printable TXT"
+            className="flex items-center gap-2 px-5 py-3.5 bg-white dark:bg-white/10 hover:bg-caramel hover:text-white dark:hover:bg-caramel dark:hover:text-white transition-all rounded-2xl font-bold text-xs uppercase tracking-wider text-espresso dark:text-soft-white border border-warm-beige/30 dark:border-white/10 shadow-sm active:scale-95 duration-100 cursor-pointer"
+          >
+            <FileText className="w-4 h-4 text-caramel group-hover:text-white" />
+            <span>Wellness Report</span>
+          </button>
+
+          <button
+            onClick={exportPDFByPrinting}
+            title="Convert and package current view as standard vector PDF document"
+            className="flex items-center gap-2 px-5 py-3.5 bg-coffee-brown hover:bg-caramel text-white transition-all rounded-2xl font-bold text-xs uppercase tracking-wider shadow-md active:scale-95 duration-100 cursor-pointer"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Print PDF</span>
+          </button>
+        </div>
       </header>
 
       <div className="grid lg:grid-cols-3 gap-8 mb-12">

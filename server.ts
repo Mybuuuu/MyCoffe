@@ -326,17 +326,17 @@ app.post('/api/ai/insights', async (req, res) => {
     const parsedData = JSON.parse(response.text || '{}');
     res.json(parsedData);
   } catch (err: any) {
-    // If it is a model key validation/qualification error, log a concise notice rather than outputting raw Google API exception chains.
+    // Log a concise notice rather than outputting raw Google API exception chains to stop console.warn noise.
     const errString = err.message || JSON.stringify(err) || '';
     const isApiKeyError = errString.includes('API key') || errString.includes('API_KEY_INVALID') || errString.includes('400');
     const isQuotaError = errString.includes('quota') || errString.includes('RESOURCE_EXHAUSTED') || errString.includes('429');
     
     if (isApiKeyError) {
-      console.warn('Caffeine Tracker [AI Advisory]: Provided Gemini API key was rejected by Google servers. Resorting to safe biological fallback curves.');
+      console.log('Caffeine Tracker [AI Advisory]: Provided Gemini API key was rejected by Google servers. Utilizing safe biological fallback curves.');
     } else if (isQuotaError) {
-      console.warn('Caffeine Tracker [AI Advisory]: Gemini API rate limit or quota exceeded (Free tier 20 reqs/day count). Resorting to safe biological fallback curves.');
+      console.log('Caffeine Tracker [AI Advisory]: Gemini API rate limit or quota exceeded (Free tier 20 reqs/day count). Utilizing safe biological fallback curves.');
     } else {
-      console.warn('Caffeine Tracker [AI Advisory]: Dynamic generation bypassed. Resorting to safe biological fallback curves. Reason:', err.message || err);
+      console.log('Caffeine Tracker [AI Advisory]: Dynamic generation bypassed (Service unavailable / busy). Utilizing safe biological fallback curves.');
     }
     res.json(FALLBACK_INSIGHTS);
   }

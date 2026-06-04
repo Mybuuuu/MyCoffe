@@ -37,11 +37,15 @@ export interface UserProfile {
   onboarded: boolean;
   dailyLimit: number;
   streak: number;
-  lastLogDate?: string | null;
+  bestStreak?: number; // Highest-ever consecutive safe days
+  hydrationAlerts?: boolean;
+  cutoffAlerts?: boolean;
+  sleepAlerts?: boolean;
   theme: 'light' | 'dark';
+  lastLogDate?: string | null;
 }
 
-export interface Notification {
+export interface AppNotification {
   id: string;
   title: string;
   message: string;

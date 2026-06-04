@@ -1,0 +1,29 @@
+{
+  "name": "MyCoffee - Caffeine Companion",
+  "short_name": "MyCoffee",
+  "description": "Chibi brand coffee & heart rate caffeine companion tracker featuring Barista Cat.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF6F0",
+  "theme_color": "#6B4E31",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/assets/mycoffe1.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/mycoffe2.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/mycoffe3.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

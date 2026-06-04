@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bell, X, Info, AlertTriangle, CheckCircle, Clock, Trash2 } from 'lucide-react';
-import { Notification } from '../types';
+import { AppNotification as Notification } from '../types';
 import { cn } from '../lib/utils';
 
 interface NotificationCenterProps {

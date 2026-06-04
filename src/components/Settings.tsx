@@ -35,7 +35,20 @@ interface SettingsProps {
 
 export default function Settings({ profile, customDrinks, onUpdate, onBack, onReset, onRemoveCustomDrink }: SettingsProps) {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [activeTab, setActiveTab] = useState<'profile' | 'appearance' | 'data' | 'custom'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'appearance' | 'data' | 'custom' | 'notifications'>('profile');
+  const [notifPermission, setNotifPermission] = useState<'default' | 'granted' | 'denied' | 'unsupported'>(
+    !('Notification' in window) ? 'unsupported' : window.Notification.permission as any
+  );
+
+  const requestNotifPermission = async () => {
+    if (!('Notification' in window)) return;
+    try {
+      const status = await window.Notification.requestPermission();
+      setNotifPermission(status as any);
+    } catch (err) {
+      console.error('Error requesting notification permission:', err);
+    }
+  };
 
   const toggleTheme = () => {
     onUpdate({ ...profile, theme: profile.theme === 'light' ? 'dark' : 'light' });
@@ -79,6 +92,7 @@ export default function Settings({ profile, customDrinks, onUpdate, onBack, onRe
            {[
              { id: 'profile', label: 'Personal Profile', icon: <User className="w-5 h-5" /> },
              { id: 'custom', label: 'Custom Drinks', icon: <Star className="w-5 h-5" /> },
+             { id: 'notifications', label: 'Alert Reminders', icon: <Bell className="w-5 h-5" /> },
              { id: 'appearance', label: 'Appearance', icon: <Palette className="w-5 h-5" /> },
              { id: 'data', label: 'Data & Privacy', icon: <Shield className="w-5 h-5" /> },
            ].map(tab => (
@@ -186,6 +200,123 @@ export default function Settings({ profile, customDrinks, onUpdate, onBack, onRe
                     <p className="text-sm">You can create them in the drink tracker.</p>
                   </div>
                 )}
+              </motion.section>
+            )}
+
+            {activeTab === 'notifications' && (
+              <motion.section 
+                key="notifications"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="bg-white dark:bg-espresso/45 p-10 rounded-[3.5rem] border border-warm-beige/30 dark:border-white/10 shadow-xl text-left"
+              >
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center">
+                    <Bell className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-display font-black text-espresso dark:text-soft-white">Alert Reminders</h2>
+                    <p className="text-xs text-espresso/40 dark:text-soft-white/40">Keep and schedule safe caffeine clearances</p>
+                  </div>
+                </div>
+
+                {/* System Permissions banner card */}
+                <div className="mb-8 p-6 rounded-[2rem] bg-soft-white dark:bg-white/5 border border-warm-beige/15 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <p className="font-bold text-espresso dark:text-soft-white flex items-center gap-2">
+                      <span>🔔 System Browser Notifications</span>
+                      <span className={cn(
+                        "text-[9px] px-2.5 py-1 rounded-full font-sans uppercase tracking-widest font-black",
+                        notifPermission === 'granted' ? "bg-emerald-100 text-emerald-800" :
+                        notifPermission === 'denied' ? "bg-rose-100 text-rose-800" :
+                        notifPermission === 'unsupported' ? "bg-gray-100 text-gray-800" : "bg-amber-100 text-amber-800"
+                      )}>
+                        {notifPermission}
+                      </span>
+                    </p>
+                    <p className="text-xs text-espresso/50 dark:text-soft-white/50 mt-1 max-w-md">
+                      Required for background hydration pings, critical safety overconsumption warnings, and sleep cycle countdown clocks.
+                    </p>
+                  </div>
+                  {notifPermission !== 'granted' && notifPermission !== 'unsupported' && (
+                    <button
+                      onClick={requestNotifPermission}
+                      className="px-6 py-3.5 bg-coffee-brown hover:bg-caramel text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-md transition-all shrink-0 cursor-pointer"
+                    >
+                      Grant Access
+                    </button>
+                  )}
+                </div>
+
+                <div className="space-y-6">
+                  {/* Hydration Reminder toggle */}
+                  <div className="flex items-center justify-between p-6 bg-soft-white dark:bg-white/5 rounded-2xl border border-warm-beige/10 dark:border-white/5">
+                    <div>
+                      <p className="font-bold text-espresso dark:text-soft-white">💧 Hydration Reminders</p>
+                      <p className="text-xs text-espresso/40 dark:text-soft-white/40">Urges you to drink regular water intervals to speed clearing rates</p>
+                    </div>
+                    <button 
+                      onClick={() => updateProfile('hydrationAlerts', profile.hydrationAlerts === false ? true : false)}
+                      className={cn(
+                        "w-16 h-8 rounded-full transition-all relative p-1.5",
+                        profile.hydrationAlerts !== false ? "bg-emerald-500" : "bg-warm-beige dark:bg-white/10"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-5 h-5 bg-white rounded-full shadow-md transition-transform",
+                        profile.hydrationAlerts !== false ? "translate-x-8" : "translate-x-0"
+                      )} />
+                    </button>
+                  </div>
+
+                  {/* Caffeine Cutoff clock */}
+                  <div className="flex items-center justify-between p-6 bg-soft-white dark:bg-white/5 rounded-2xl border border-warm-beige/10 dark:border-white/5">
+                    <div>
+                      <p className="font-bold text-espresso dark:text-soft-white">🕒 Bedtime Cutoff Alarms</p>
+                      <p className="text-xs text-espresso/40 dark:text-soft-white/40">Alerts you 8 hours before sleeping to block caffeine ingestion</p>
+                    </div>
+                    <button 
+                      onClick={() => updateProfile('cutoffAlerts', profile.cutoffAlerts === false ? true : false)}
+                      className={cn(
+                        "w-16 h-8 rounded-full transition-all relative p-1.5",
+                        profile.cutoffAlerts !== false ? "bg-emerald-500" : "bg-warm-beige dark:bg-white/10"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-5 h-5 bg-white rounded-full shadow-md transition-transform",
+                        profile.cutoffAlerts !== false ? "translate-x-8" : "translate-x-0"
+                      )} />
+                    </button>
+                  </div>
+
+                  {/* Sleep winding warning */}
+                  <div className="flex items-center justify-between p-6 bg-soft-white dark:bg-white/5 rounded-2xl border border-warm-beige/10 dark:border-white/5">
+                    <div>
+                      <p className="font-bold text-espresso dark:text-soft-white">😴 Cozy Cat Sleep Alerts</p>
+                      <p className="text-xs text-espresso/40 dark:text-soft-white/40">Signals a countdown 1 hour before scheduled bedtime with relaxation advice</p>
+                    </div>
+                    <button 
+                      onClick={() => updateProfile('sleepAlerts', profile.sleepAlerts === false ? true : false)}
+                      className={cn(
+                        "w-16 h-8 rounded-full transition-all relative p-1.5",
+                        profile.sleepAlerts !== false ? "bg-emerald-500" : "bg-warm-beige dark:bg-white/10"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-5 h-5 bg-white rounded-full shadow-md transition-transform",
+                        profile.sleepAlerts !== false ? "translate-x-8" : "translate-x-0"
+                      )} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-8 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/10 text-amber-800 dark:text-amber-300 text-xs flex gap-3 items-start">
+                  <Info className="w-5 h-5 shrink-0 mt-0.5" />
+                  <p className="font-medium leading-relaxed">
+                    <strong>Cozy Mode Configured:</strong> These timers synchronize silently with your target Bedtime (currently set to {profile.bedtime || '23:00'} under Profile). Keep your biological clocks pristine, human companion!
+                  </p>
+                </div>
               </motion.section>
             )}
 
